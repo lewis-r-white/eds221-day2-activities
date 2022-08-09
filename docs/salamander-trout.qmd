@@ -1,0 +1,72 @@
+---
+title: "Salamander and Trout"
+author: "Lewis"
+format: html
+editor: visual
+execute:
+  warning: false
+  echo: false
+---
+
+```{r}
+library(tidyverse)
+library(here)
+library(janitor)
+```
+
+```{r}
+mack_verts <- read_csv(here::here("data", "AS00601.csv")) %>%
+  clean_names()
+
+
+mc_wt_5 <- mack_verts$weight[5]
+mc_length_8_20 <- mack_verts$length1[8:20]
+mc_dates <- mack_verts$sampledate
+```
+
+Make a salamander subset
+
+```{r}
+mc_salamanders <- mack_verts %>%
+  filter(species == "DITE")
+```
+
+```{r}
+salamander_plot <- ggplot(data = mc_salamanders, aes(x = length1, y = weight)) +
+  geom_point(alpha = 0.4, color = "steel blue") +
+  labs(x = "salamander length",
+       y = "salamander weight", 
+       title = "salamander bodies are cool",
+       subtitle = "we love salamanders",
+       caption = "Gregory, S.V. and I. Arismendi. 2020. Aquatic Vertebrate Population Study in Mack Creek, Andrews Experimental Forest, 1987 to present ver 14. Environmental Data Initiative. https://doi.org/10.6073/pasta/7c78d662e847cdbe33584add8f809165 (Accessed 2022-08-09).") +
+  theme_bw()
+```
+
+```{r}
+ggsave(here("figs", "salamader_plot.png"), height = 5, width = 6)
+```
+
+TROUT
+
+```{r}
+mc_trout <- mack_verts %>%
+  filter(species == "ONCL")
+
+
+ggplot(data = mc_trout, aes(x = length1, y = weight)) +
+  geom_point(alpha = 0.4, aes(color = reach)) +
+  labs(x = "trout length",
+       y = "trout weight", 
+       title = "trout bodies are cool",
+       subtitle = "we love trout",
+       caption = "Gregory, S.V. and I. Arismendi. 2020. Aquatic Vertebrate Population Study in Mack Creek, Andrews Experimental Forest, 1987 to present ver 14. Environmental Data Initiative. https://doi.org/10.6073/pasta/7c78d662e847cdbe33584add8f809165 (Accessed 2022-08-09).") +
+  theme_bw() +
+  scale_color_manual(values = c("steel blue", "orange", "red")) +
+  facet_wrap(~reach)
+
+
+```
+
+```{r}
+ggsave(here("figs", "cutthroat_size.png"), height = 6, width = 6)
+```
